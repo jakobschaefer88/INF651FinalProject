@@ -45,7 +45,7 @@ function createSelectOptions(users) {
 
     // if user gave a non-array, return an empty array
     if (!Array.isArray(users)) {
-        return;
+        return [];
     }
 
     const options =[];
@@ -72,6 +72,22 @@ Function toggleCommentSection
 5. The function should toggle the 'hide' class on the section element.
 */
 
+function toggleCommentSection(postID) {
+    if (postID === undefined) {
+        return undefined;
+    }
+
+    const section = document.querySelector(`section[data-post-id="${postID}"]`);
+
+    if (!section) {
+        return null;
+    }
+
+    section.classList.toggle('hide');
+
+    return section;
+}
+
 /*
 Function toggleCommentButton
 
@@ -81,6 +97,25 @@ Function toggleCommentButton
 4. The function should select and return the correct button element
 5. The function should change textContent to 'Hide comments" if it had "Show comments".
 */
+
+function toggleCommentButton(postID) {
+    if (postID === undefined) {
+        return undefined;
+    }
+
+    const button = document.querySelector(`button[data-post-id="${postID}"]`);
+
+    if (!button) {
+        return null;
+    }
+
+    if (button.textContent === "Show Comments") {
+        button.textContent = "Hide Comments";
+    } else {
+        button.textContent = "Show Comments";
+    }
+    return button;
+}
 
 /*
 Function deleteChildElements
