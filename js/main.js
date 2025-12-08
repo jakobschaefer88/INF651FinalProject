@@ -1,5 +1,5 @@
 /*
-Function createElemWithText
+Function 1 createElemWithText
 
 1.The function createElemWithText should exist.
 2. The function should create and return the requested HTML element.
@@ -10,23 +10,17 @@ Function createElemWithText
 7. The function should apply a class to the element if className parameter is provided.
 */
 
-function createElemWithText(tagName = 'p', text = '', className) {
-    // Create the element using tagName
-    const element = document.createElement(tagName);
-    // set the text content
-    element.textContent = text;
-
-    // If className is provided, set it
+function createElemWithText(elementType = "p", textContent = "", className) {
+    const elem = document.createElement(elementType);
+    elem.textContent = textContent;
     if (className) {
-        element.className = className;
+        elem.className = className;
     }
-
-    //return element
-    return element;
+    return elem;
 }
 
 /*
-Function createSelectOptions
+Function 2 createSelectOptions
 
 1. Function CreateSelectOptions should exist
 2. The function should return undefined if no parameter is provided.
@@ -38,19 +32,19 @@ Function createSelectOptions
 */
 
 function createSelectOptions(users) {
-    // If called without passing a parameter, return undefined
+// If called without passing a parameter, return undefined
     if (users === undefined) {
         return undefined;
     }
 
-    // if user gave a non-array, return an empty array
+// if user gave a non-array, return an empty array
     if (!Array.isArray(users)) {
         return [];
     }
 
     const options =[];
 
-    // Loop trhrough each user object provided
+// Loop trhrough each user object provided
     users.forEach(user => {
         const option = document.createElement('option');
         option.value = user.id;
@@ -58,12 +52,12 @@ function createSelectOptions(users) {
         options.push(option);
     });
 
-    // Return the array of generated option elements
+// Return the array of generated option elements
     return options;
 }
 
 /*
-Function toggleCommentSection
+Function 3 toggleCommentSection
 
 1. The function toggleCommentSection should exist
 2. The function should return undefined if postId parameter is not provided
@@ -89,7 +83,7 @@ function toggleCommentSection(postID) {
 }
 
 /*
-Function toggleCommentButton
+Function 4 toggleCommentButton
 
 1. The function toggleCommentButton should exist
 2. The function should return undefined if not passed a postId parameter.
@@ -118,7 +112,7 @@ function toggleCommentButton(postID) {
 }
 
 /*
-Function deleteChildElements
+Function 5 deleteChildElements
 
 1. The function deleteChildElements should exist.
 2. The function should return undefined if an HTML element is not received as a parameter.
@@ -126,8 +120,20 @@ Function deleteChildElements
 4. The function should return the HTML element with all child elements deleted.
 */
 
+function deleteChildElements(element) {
+    if (!(element instanceof HTMLElement)) {
+        return undefined;
+    }
+
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+
+    return element;
+}
+
 /*
-Function addButtonListeners
+Function 6 addButtonListeners
 
 1. The function addButtonListeners should exist.
 2. The function should return an empty NodeList if there are no buttons found within the main element.
@@ -136,8 +142,22 @@ Function addButtonListeners
 5. The function should add a click listener that calls the toggleComments function to each button element found within the main element.
 */
 
+function addButtonListeners() {
+    const buttons = document.querySelectorAll("main button");
+    if (buttons.length === 0) return buttons;
+
+    for (const button of buttons) {
+        const postId = button.dataset.postId;
+        if (postId) {
+            button.addEventListener("click", (event) => toggleComments(event, postId));
+        }
+    }
+
+    return buttons;
+}
+
 /*
-Function removeButtonListeners
+Function 7 removeButtonListeners
 
 1. The function removeButtonListeners should exist.
 2. The function should return an empty NodeList if there are no buttons found within the main element.
@@ -145,8 +165,23 @@ Function removeButtonListeners
 4. The function should remove all click listeners that call the toggleComments function for all button elements found within the main element.
 */
 
+function removeButtonListeners() {
+    const buttons = document.querySelectorAll("main button");
+
+    for (const button of buttons) {
+        const postId = button.dataset.postId;
+        if (postId) {
+            button.removeEventListener("click", (event) =>
+                toggleComments(event, postId)
+            );
+        }
+    }
+
+    return buttons;
+}
+
 /*
-Function createComments
+Function 8 createComments
 
 1. The function createComments should exist.
 2. The function should return undefined if it does not receive a parameter.
@@ -156,8 +191,29 @@ Function createComments
 6. The function should assign accurate data to the h3 (name) and paragraph elements (body and From: email.)
 */
 
+function createComments(comments) {
+    if (!comments) {
+        return undefined;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    for(const comment of comments) {
+        const article = document.createElement('article');
+
+        const h3 = createElemWithText('h3', comment.name);
+        const p1 = createElemWithText('p', comment.body);
+        const p2 = createElemWithText('p', `From: ${comment.email}`);
+
+        article.append(h3, p1, p2);
+        fragment.append(article);
+
+    }
+    return fragment;
+}
+
 /*
-Function populateSelectMenu
+Function 9 populateSelectMenu
 
 1. The function populateSelectMenu should exist.
 2. The function should return undefined if it does not receive a parameter with JSON users data.
@@ -165,16 +221,44 @@ Function populateSelectMenu
 4. The function receives the option elements from createSelectOptions and appends them to the select element
 */
 
+function populateSelectMenu(users) {
+    if (!users) {
+        return undefined;
+    }
+
+    const selectMenu = document.getElementById('selectMenu');
+    const options = createSelectOptions(users);
+
+    if(!options) {
+        return undefined;
+    }
+
+    for(const option of options) {
+        selectMenu.append(option);
+    }
+    return selectMenu;
+}
+
 /*
-Function getUsers
+Function 10 getUsers
 
 1. The function getUsers should exist
 2. The function should use async / await to retrieve and return users data.
 3. The function should return accurate JSON users data.
 */
 
+async function getUsers() {
+    try {
+        const respone = await fetch('https://jsonplaceholder.typicode.com/users');
+        return await respone.json();
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+
 /*
-Function getUserPosts
+Function 11 getUserPosts
 
 1. The function getUserPosts should exist
 2. The function should return undefined if no user ID parameter is provided.
@@ -182,8 +266,22 @@ Function getUserPosts
 4. The function should return accurate JSON user posts data.
 */
 
+async function getUserPosts(userId) {
+    if (!userId) {
+        return undefined;
+    }
+
+    try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}/posts`);
+        return await response.json();
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+
 /*
-Function getUser
+Function 12 getUser
 
 1. The function getUser should exist.
 2. The function should return undefined if no user ID parameter is provided.
@@ -191,8 +289,21 @@ Function getUser
 4. The function should return accurate JSON user data.
 */
 
+async function getUser(userId) {
+    if (!userId) {
+        return undefined;
+    }
+    try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+        return await response.json();
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+
 /*
-Function getPostComments
+Function 13 getPostComments
 
 1. The function getPostComments should exist.
 2. The function should return undefined if no post ID parameter is provided.
@@ -200,8 +311,21 @@ Function getPostComments
 4. The function getPostComments should return accurate JSON post comment data.
 */
 
+async function getPostComments(postId) {
+    if (!postId) {
+        return undefined;
+    }
+    try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`);
+        return await response.json();
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
+}
+
 /*
-Function displayComments
+Function 14 displayComments
 
 1. The function displayComments should exist.
 2. The function should return undefined if no postId parameter is provided.
@@ -211,8 +335,23 @@ Function displayComments
 6. The function should create and return a section element with all comments for the given post ID appended.
 */
 
+async function displayComments(postId) {
+    if (!postId) {
+        return undefined;
+    }
+    const section = document.createElement('section');
+    section.dataset.postId = postId;
+    section.classList.add('comments', 'hide');
+
+    const comments = await getPostComments(postId);
+    const fragment = createComments(comments);
+
+    section.append(fragment);
+    return section;
+}
+
 /*
-Function createPosts
+Function 15 createPosts
 
 1. The function createPosts should exist.
 2. The function should return undefined if no posts data parameter is provided.
@@ -222,8 +361,32 @@ Function createPosts
 6. The function should create an h2, 4 paragraphs, a button, and a section element, and assign the desired textContent and attributes per the project instructions.
 */
 
+async function createPosts(posts) {
+    if (!posts) {
+        return undefined;
+    }
+
+    const fragment = document.createDocumentFragment();
+    for(const post of posts) {
+        const article = document.createElement('article');
+        const h2 = createElemWithText('h2', post.title);
+        const pBody = createElemWithText('p', post.body);
+        const pId = createElemWithText('p', `Post ID: ${post.id}`);
+        const author = await getUser(post.userId);
+        const pAuthor = createElemWithText('p',`Author: ${author.name} with ${author.company.name}`);
+        const pCompany = createElemWithText("p", author.company.catchPhrase);
+        const button = createElemWithText('button', 'Show Comments');
+        button.dataset.postId = post.id;
+        const section = await displayComments(post.id);
+
+        article.append(h2, pBody, pId, pAuthor, pCompany, button, section);
+        fragment.append(article);
+    }
+    return fragment;
+}
+
 /*
-Function displayPosts
+Function 16 displayPosts
 
 1. The function displayPosts should exist.
 2. The function should return a paragraph element with the default-text class if no posts data is provided.
@@ -231,16 +394,32 @@ Function displayPosts
 4. The function should append a document fragment containing article elements (the posts) to the main element.
 */
 
+async function displayPosts(posts) {
+    const main = document.querySelector('main');
+    const element = posts ? await createPosts(posts) : createElemWithText('p', 'Select an Employee to display their posts.', 'default-text');
+    main.append(element);
+    return element;
+}
+
 /*
-Function toggleComments
+Function 17 toggleComments
 
 1. The function toggleComments should exist.
 2. The function should return undefined if it does not receive the required event and postId parameters.
 3. The function should return an array containing the section element returned by toggleCommentSection and the button element returned by toggleCommentButton.
 */
 
+function toggleComments(event, postId) {
+    if (!event || !postId) {
+        return undefined;
+    }
+    const section = toggleCommentSection(postId);
+    const button = toggleCommentButton(postId);
+    return [section, button];
+}
+
 /*
-Function refreshPosts
+Function 18 refreshPosts
 
 1. The function refreshPosts should exist.
 2. The function should return undefined if it does not receive a posts data parameter.
@@ -248,8 +427,20 @@ Function refreshPosts
 4. The function should return an array of results with accurate data.
 */
 
+async function refreshPosts(posts) {
+    if (!posts) {
+        return undefined;
+    }
+
+    const removeButtons = removeButtonListeners();
+    const main = deleteChildElements(document.querySelector('main'));
+    const fragment = await displayPosts(posts);
+    const addButtons = addButtonListeners();
+    return [removeButtons, main, fragment, addButtons];
+}
+
 /*
-Function selectMenuChangeEventHandler
+Function 19 selectMenuChangeEventHandler
 
 1. The function selectMenuChangeEventHandler should exist.
 2. The function should return undefined if it does not receive a change event parameter.
@@ -258,8 +449,27 @@ Function selectMenuChangeEventHandler
 5. The function should return arrays with accurate data.
 */
 
+async function selectMenuChangeEventHandler(event) {
+    if (!event) return undefined;
+
+    const selectMenu = event.target ?? event.currentTarget ?? event;
+    selectMenu.disabled = true;
+
+    const userId = Number(selectMenu.value);
+    const posts = await getUserPosts(userId);
+    const refreshPostsArray = await refreshPosts(posts);
+
+    selectMenu.disabled = false;
+
+    return [
+        userId,
+        Array.isArray(posts) ? posts : [],
+        Array.isArray(refreshPostsArray) ? refreshPostsArray : []
+    ];
+}
+
 /*
-Function initPage
+Function 20 initPage
 
 1. The function initPage should exist.
 2. The function should return an array.
@@ -267,8 +477,21 @@ Function initPage
 4. The function should return an array that contains a select element.
 */
 
+async function initPage() {
+    const users = await getUsers();
+    const selectMenu = populateSelectMenu(users);
+    return [users, selectMenu];
+}
+
 /*
-Function initApp
+Function 21 initApp
 
 1. The function initApp should exist.
 */
+
+function initApp() {
+    initPage();
+    document.getElementById('selectMenu').addEventListener('change', selectMenuChangeEventHandler);
+}
+
+document.addEventListener('DOMContentLoaded', initApp);
